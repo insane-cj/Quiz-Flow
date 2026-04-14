@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NPTEL QuizFlow</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7f7f5;
+      --surface: #ffffff;
+      --border: #e4e4e0;
+      --border-strong: #c8c8c2;
+      --text: #1a1a18;
+      --text-2: #5a5a55;
+      --text-3: #9a9a93;
+      --accent: #1a1a18;
+      --accent-light: #f0f0ec;
+      --green: #1a5c35;
+      --green-bg: #edf7f1;
+      --green-border: #b8dfc8;
+      --red: #8b1a1a;
+      --red-bg: #fdf2f2;
+      --red-border: #e8c0c0;
+      --amber: #7a4a00;
+      --amber-bg: #fdf8ed;
+      --progress: #1a1a18;
+      --radius: 6px;
+      --radius-lg: 10px;
+      --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    .app {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 28px;
+      gap: 16px;
+    }
+
+    .brand-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 6px;
+    }
+
+    .brand-title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      color: var(--text);
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: none;
+      border-radius: var(--radius);
+      padding: 9px 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s, opacity .15s, transform .1s;
+      white-space: nowrap;
+    }
+    .btn:hover { opacity: .88; }
+    .btn:active { transform: scale(.98); }
+    .btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-2);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { background: var(--accent-light); opacity: 1; }
+
+    .btn-solid {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-green {
+      background: var(--green);
+      color: white;
+    }
+
+    .btn-outline {
+      background: white;
+      color: var(--text);
+      border: 1px solid var(--border-strong);
+    }
+    .btn-outline:hover { background: var(--accent-light); opacity: 1; }
+
+    /* ── Screens ── */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    /* ── Home Screen ── */
+    .home-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .home-main {
+      grid-column: 1 / -1;
+    }
+
+    .home-main h2 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -.025em;
+      margin-bottom: 10px;
+    }
+
+    .home-main p {
+      font-size: 14.5px;
+      color: var(--text-2);
+      margin-bottom: 20px;
+      line-height: 1.65;
+    }
+
+    .feature-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .feature-list li {
+      font-size: 14px;
+      color: var(--text-2);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .feature-list li::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      background: var(--border-strong);
+      border-radius: 50%;
+      margin-top: 7px;
+      flex-shrink: 0;
+    }
+
+    .mini-card h4 {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .01em;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .mini-card p {
+      font-size: 13px;
+      color: var(--text-2);
+      line-height: 1.6;
+    }
+
+    /* ── Progress ── */
+    .progress-section {
+      margin-bottom: 20px;
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .progress-meta span {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-2);
+    }
+
+    .progress-track {
+      height: 3px;
+      background: var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--progress);
+      transition: width .25s ease;
+    }
+
+    /* ── Meta row ── */
+    .meta-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .meta-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+    }
+
+    .meta-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--text-3);
+      margin-bottom: 4px;
+    }
+
+    .meta-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ── Question ── */
+    .question-text {
+      font-size: 15.5px;
+      font-weight: 500;
+      line-height: 1.7;
+      margin-bottom: 20px;
+      white-space: pre-line;
+      color: var(--text);
+    }
+
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: white;
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+      font-size: 14px;
+      color: var(--text-2);
+    }
+
+    .option:hover {
+      border-color: var(--border-strong);
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .option.selected {
+      border-color: var(--text);
+      background: var(--accent-light);
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .option input[type="radio"] {
+      margin-top: 2px;
+      accent-color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* ── Nav Row ── */
+    .nav-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .nav-row-right {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* ── Score Card ── */
+    .score-card {
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      border: 1px solid var(--green-border);
+      background: var(--green-bg);
+      margin-bottom: 16px;
+    }
+
+    .score-card.bad {
+      border-color: var(--red-border);
+      background: var(--red-bg);
+    }
+
+    .score-card.amber {
+      border-color: #e8d098;
+      background: var(--amber-bg);
+    }
+
+    .score-card h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .score-card p {
+      font-size: 14px;
+      color: var(--text-2);
+      margin-top: 4px;
+    }
+
+    /* ── Summary Grid ── */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .summary-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .summary-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--text-3);
+      margin-bottom: 6px;
+    }
+
+    .summary-value {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+    }
+
+    /* ── Review ── */
+    .section-title {
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      margin-bottom: 4px;
+    }
+
+    .section-subtitle {
+      font-size: 13.5px;
+      color: var(--text-3);
+      margin-bottom: 20px;
+    }
+
+    .week-filter {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 18px 0;
+    }
+
+    .review-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .review-header span {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .review-header .score-chip {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--text-2);
+    }
+
+    .review-item {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .badge.correct {
+      background: var(--green-bg);
+      color: var(--green);
+      border: 1px solid var(--green-border);
+    }
+
+    .badge.wrong {
+      background: var(--red-bg);
+      color: var(--red);
+      border: 1px solid var(--red-border);
+    }
+
+    .review-question {
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.6;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+
+    .answer-row {
+      font-size: 13px;
+      line-height: 1.6;
+      padding: 6px 10px;
+      border-radius: 4px;
+      margin-top: 4px;
+    }
+
+    .answer-row.user-wrong {
+      background: var(--red-bg);
+      color: var(--red);
+    }
+
+    .answer-row.user-correct {
+      background: var(--green-bg);
+      color: var(--green);
+    }
+
+    .answer-row.correct-ans {
+      background: var(--green-bg);
+      color: var(--green);
+    }
+
+    .answer-row strong {
+      font-weight: 600;
+    }
+
+    /* ── Result title ── */
+    #resultScreen h2, #finalScreen h2 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      margin-bottom: 16px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .home-grid { grid-template-columns: 1fr; }
+      .meta-row { grid-template-columns: 1fr 1fr; }
+      .summary-grid { grid-template-columns: 1fr; }
+      .home-main h2 { font-size: 22px; }
+      .app { padding: 20px 16px 48px; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div>
+      <div class="brand-tag">NPTEL &mdash; Computer Networks &amp; Internet Protocol</div>
+      <div class="brand-title">QuizFlow</div>
+    </div>
+    <button class="btn btn-ghost" onclick="restartAll()">Restart</button>
+  </div>
+
+  <!-- HOME -->
+  <section id="homeScreen" class="screen active">
+    <div class="home-grid">
+      <div class="card home-main">
+        <h2>Week-wise Practice Quiz</h2>
+        <p>Work through each week one question at a time. See your score at the end of each week, then review your answers in detail.</p>
+        <ul class="feature-list">
+          <li>Week 1 — one question per page — submit to see Week 1 score</li>
+          <li>All next weeks continue in same flow</li>
+          <li>Final summary with total score across all loaded weeks</li>
+          <li>Review correct and wrong answers at any point</li>
+        </ul>
+        <button class="btn btn-solid" onclick="startQuiz()">Start Quiz</button>
+      </div>
+
+      <div class="card mini-card">
+        <h4>Quiz Structure</h4>
+        <p>Weeks 0 to 11 loaded<br>10 questions each week<br>Total updates included</p>
+      </div>
+      <div class="card mini-card">
+        <h4>Scoring</h4>
+        <p>1 mark per question<br>Week-wise score shown separately<br>Final total at end</p>
+      </div>
+      <div class="card mini-card">
+        <h4>Review Mode</h4>
+        <p>After each week, inspect your answers against the correct ones.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quizScreen" class="screen">
+    <div class="progress-section">
+      <div class="progress-meta">
+        <span id="progressLabel">Week 1 &mdash; Question 1 of 10</span>
+        <span id="answeredLabel">Answered: 0 / 10</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <div class="meta-row">
+      <div class="meta-box">
+        <div class="meta-label">Week</div>
+        <div class="meta-value" id="weekMeta">Week 1</div>
+      </div>
+      <div class="meta-box">
+        <div class="meta-label">Question</div>
+        <div class="meta-value" id="questionMeta">1 / 10</div>
+      </div>
+      <div class="meta-box">
+        <div class="meta-label">Selected</div>
+        <div class="meta-value" id="selectedMeta">None</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="question-text" id="questionText"></div>
+      <div id="optionsContainer"></div>
+
+      <div class="nav-row">
+        <button class="btn btn-ghost" id="prevBtn" onclick="prevQuestion()">Previous</button>
+        <div class="nav-row-right">
+          <button class="btn btn-outline" id="nextBtn" onclick="nextQuestion()">Next</button>
+          <button class="btn btn-solid" id="submitBtn" style="display:none;" onclick="submitWeek()">Submit Week</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="resultScreen" class="screen">
+    <h2 id="resultTitle">Week Result</h2>
+    <div id="weekScoreCard" class="score-card"></div>
+
+    <div class="summary-grid">
+      <div class="summary-box">
+        <div class="summary-label">Week</div>
+        <div class="summary-value" id="weekSummaryWeek">—</div>
+      </div>
+      <div class="summary-box">
+        <div class="summary-label">Score</div>
+        <div class="summary-value" id="weekSummaryScore">—</div>
+      </div>
+      <div class="summary-box">
+        <div class="summary-label">Percentage</div>
+        <div class="summary-value" id="weekSummaryPercent">—</div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-ghost" onclick="reviewCurrentWeek()">Review Answers</button>
+      <div class="nav-row-right">
+        <button class="btn btn-green" id="nextWeekBtn" style="display:none;" onclick="goToNextWeek()">Start Week 2</button>
+        <button class="btn btn-solid" id="finalSummaryBtn" style="display:none;" onclick="showFinalSummary()">View Final Summary</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEW -->
+  <section id="reviewScreen" class="screen">
+    <div class="section-title" id="reviewTitle">Answer Review</div>
+    <div class="section-subtitle" id="reviewSubtitle">Your selected answers vs correct answers</div>
+
+    <div class="week-filter" id="reviewWeekJump"></div>
+
+    <div class="review-list" id="reviewList"></div>
+
+    <div class="nav-row" style="margin-top:20px;">
+      <button class="btn btn-ghost" onclick="backFromReview()">Back</button>
+    </div>
+  </section>
+
+  <!-- FINAL -->
+  <section id="finalScreen" class="screen">
+    <h2>Final Summary</h2>
+    <div id="finalScoreCard" class="score-card"></div>
+
+    <div class="summary-grid">
+      <div class="summary-box">
+        <div class="summary-label">Week 1</div>
+        <div class="summary-value" id="finalWeek1Score">—</div>
+      </div>
+      <div class="summary-box">
+        <div class="summary-label">Week 2</div>
+        <div class="summary-value" id="finalWeek2Score">—</div>
+      </div>
+      <div class="summary-box">
+        <div class="summary-label">Total</div>
+        <div class="summary-value" id="finalTotalScore">—</div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-ghost" onclick="reviewAllAnswers()">View All Answers</button>
+      <button class="btn btn-solid" onclick="restartAll()">Restart Quiz</button>
+    </div>
+  </section>
+
+</div>
+
+
+<script>
+  const quizData = {
+    0: [
+      { question: `Week 0 - Q1. Which scheduler in the operating system is responsible for swapping processes from the waiting queue to and from secondary memory?`, options: ['a) Medium Term scheduler','b) Long Term scheduler','c) Short Term scheduler','d) None of above'], answer: 0 },
+      { question: `Week 0 - Q2. What is the function of the umask command in Linux?`, options: ['a) To alter file ownership','b) To adjust file permissions','c) To establish default file permission mask','d) To reveal hidden files'], answer: 2 },
+      { question: `Week 0 - Q3. What is the "response time" of a process in CPU scheduling?`, options: ['a) Initial response time - Arrival time','b) Completion time - Burst duration','c) Turnaround time - Burst duration','d) First response time - Waiting duration'], answer: 0 },
+      { question: `Week 0 - Q4. Identify the octal expression of the file permission -rw-r-xr--.`, options: ['a) 654','b) 564','c) 444','d) 555'], answer: 0 },
+      { question: `Week 0 - Q5. In Linux, which command is used to print system date and time?`, options: ['a) datetime','b) sysdatetime','c) time','d) date'], answer: 3 },
+      { question: `Week 0 - Q6. In a system with a single-level page table, the TLB access time is 20 ns and main memory access time is 80 ns. If TLB hit ratio is 95%, what is the EMAT?`, options: ['a) 94','b) 96','c) 100','d) 98'], answer: 1 },
+      { question: `Week 0 - Q7. What occurs if signal() is called on a semaphore without a matching wait()?`, options: ['a) The semaphore value reaches zero.','b) The semaphore value is increased, and no error transpires.','c) The process will await the semaphore value to reach 0.','d) An error has occurred.'], answer: 1 },
+      { question: `Week 0 - Q8. Identify the full form of HTTP?`, options: ['a) Hypertext Transfer Protocol','b) Hypertext Transfer Package','c) Hyper Transfer Text Package','d) Hyper Transfer Text Practice'], answer: 0 },
+      { question: `Week 0 - Q9. What mathematical operation denotes the time complexity of Shortest Job First (SJF) scheduling for a queue of n processes?`, options: ['a) O(n)','b) O(n log n)','c) O(n²)','d) O(1)'], answer: 1 },
+      { question: `Week 0 - Q10. Which of the following best describes a deadlock condition?`, options: ['a) Processes wait forever for resources held by each other','b) CPU is idle for too long','c) A process exits unexpectedly','d) Memory is fully utilized'], answer: 0 }
+    ],
+    1: [
+      { question: `Week 1 - Q1. Map the devices with their associated layer in the TCP/IP model.
+
+A. NIC
+B. Router
+C. Bridge
+D. Hub
+
+1. Physical Layer
+2. Data Link Layer
+3. Network Layer
+4. Transport Layer`, options: ['a) A-2, B-3, C-2, and D-1','b) A-3, B-3, C-2, and D-1','c) A-3, B-3, C-1, and D-2','d) A-2, B-3, C-2, and D-2'], answer: 0 },
+      { question: `Week 1 - Q2. Which of the following is/are true with respect to Bridge?
+
+(i) Also called "smarter hub"
+(ii) It filters network traffic based on MAC address`, options: ['a) Only (i)','b) Only (ii)','c) Both (i) and (ii)','d) Either (i) or (ii)'], answer: 2 },
+      { question: `Week 1 - Q3. Which of the following statement(s) are concerned with encapsulation in computer networks?
+
+I. It involves an addition of a header and trailer to the actual data as it moves down in the TCP/IP protocol stack.
+II. At the transport layer, encapsulation includes port numbers and at the network layer, encapsulation includes IP addresses.`, options: ['a) Only (I)','b) Only (II)','c) Both (I) and (II)','d) Neither (I) nor (II)'], answer: 2 },
+      { question: `Week 1 - Q4. Which of the following is NOT a disadvantage of the circuit switching technique over the packet switching technique in computer networks?`, options: ['a) Delay in the establishment of a dedicated connection between two hosts','b) Inefficient utilization of the resources','c) Less scalable','d) Provides a dedicated communication path between two end hosts'], answer: 3 },
+      { question: `Week 1 - Q5. What is socket address?`, options: ['a) Combination of port and IP address','b) Combination of MAC and IP address','c) IP address only','d) None of this'], answer: 0 },
+      { question: `Week 1 - Q6. Which layer collects a stream of bits into a frame?`, options: ['a) Physical Layer','b) Network Layer','c) Data Link Layer','d) Session Layer'], answer: 2 },
+      { question: `Week 1 - Q7. Which transport layer protocol will be chosen by an application that does not require any reliability?`, options: ['a) TCP','b) UDP'], answer: 1 },
+      { question: `Week 1 - Q8. What is the First search-engine?`, options: ['a) Chrome','b) Internet Explorer','c) HotBot','d) Archie'], answer: 3 },
+      { question: `Week 1 - Q9. Choose the statement(s) that correctly describe(s) the roles and responsibilities of the Network Interface Card (NIC) in the computer networks.
+
+I. NIC takes over the responsibility of segmenting large chunks of data into smaller packets that can be transmitted over the networks.
+II. It converts digital data from the computer's processor to an analog signal.`, options: ['a) Only (I)','b) Only (II)','c) Both (I) and (II)','d) Neither (I) nor (II)'], answer: 2 },
+      { question: `Week 1 - Q10. What is the size of IP address (IPv4) in bytes?`, options: ['a) 4','b) 32','c) 16','d) 10'], answer: 0 }
+    ],
+    2: [
+      { question: `Week 2 - Q1. Is host.xyz.com. a fully qualified domain name?`, options: ['a) True','b) False'], answer: 0 },
+      { question: `Week 2 - Q2. What makes FTP more secure than TFTP (Trivial File Transfer Protocol)?`, options: ['a) TFTP lacks features like user authentication and secure data transfer mechanisms.','b) TFTP allows simultaneous connections without encryption.','c) TFTP uses TCP, which is inherently less secure than UDP.','d) TFTP is designed for unreliable networks, making it inherently less secure.'], answer: 0 },
+      { question: `Week 2 - Q3. In the HTTP architecture, which of the following best describes a Uniform Resource Locator (URL)?`, options: ['a) A secure protocol for encrypting HTTP communication.','b) A client-side scripting language for web development.','c) A unique identifier for resources, including the protocol, hostname, and path.','d) A header that allows caching of web pages for better performance.'], answer: 2 },
+      { question: `Week 2 - Q4. Which of the following is the correct syntax for anchor tags in HTML?`, options: ['a) <p>...</p>','b) <ar>...</ar>','c) <a>...</a>','d) <b>...</b>'], answer: 2 },
+      { question: `Week 2 - Q5. Which of the following is correct for statements P, Q and R?
+
+P: HTTP uses TCP port 80 for communication.
+
+Q: TELNET transmits data in an encrypted format.
+
+R: DNS can operate on both TCP and UDP.`, options: ['a) Both P and R is False, Only Q is True','b) Both P and R is True, Q is False','c) Only Q is True','d) Only R is False'], answer: 1 },
+      { question: `Week 2 - Q6. What is the correct syntax to be written in the command line to initiate a Telnet connection to the web server of www.iitkgp.ac.in?`, options: ['a) telnet//www.iitkgp.ac.in','b) telnet:www.iitkgp.ac.in','c) telnet://www.iitkgp.ac.in','d) telnet www.iitkgp.ac.in'], answer: 3 },
+      { question: `Week 2 - Q7. Which of the following protocols allow non-ASCII data to be sent over email?`, options: ['a) IMAP4','b) TELNET','c) MIME','d) POP3'], answer: 2 },
+      { question: `Week 2 - Q8. Which of the following is true about the mail transfer protocol?
+
+S1: Can send image files with the help of IMAP4
+S2: Can send image files with the help of POP3
+S3: IMAP4 is more secure than POP3`, options: ['a) Only S1','b) Only S2','c) S2 and S3 only','d) S3 Only'], answer: 3 },
+      { question: `Week 2 - Q9. Which of the following is/are not an Application Layer protocol(s)?`, options: ['a) HTTP','b) SFTP','c) UDP','d) SNMP'], answer: 2 },
+      { question: `Week 2 - Q10. What is the command used by DNS to translate a fully qualified domain name into its corresponding IP address?`, options: ['a) iplookup','b) nssearch','c) ipconfig','d) nslookup'], answer: 3 }
+    ],
+    3: [
+      { question: `Week 3 - Q1. Flow control is mainly implemented in`, options: ['a) Physical Layer','b) Application Layer','c) Transport Layer','d) Session Layer'], answer: 2 },
+      { question: `Week 3 - Q2. What kind of sequence number does TCP use?`, options: ['a) byte-oriented sequence number','b) packet-oriented sequence number','c) Randomly generated fixed sequence numbers','d) none of them'], answer: 0 },
+      { question: `Week 3 - Q3. Which of the following services is NOT supported by the transport layer?`, options: ['a) End-to-end packet delivery','b) Ordered packet delivery','c) Reliable data delivery','d) Forwarding the datagram from one hop to another hop in the network'], answer: 3 },
+      { question: `Week 3 - Q4. Transport layer is implemented in the Firmware of a computer system.`, options: ['a) True','b) False'], answer: 1 },
+      { question: `Week 3 - Q5. A data of 40 bytes need to be delivered using TCP protocol but a sender can send a segment of maximum size 12 bytes only. Identify the sequence number of the last segment formed if the sequence number field uses 5 bits only?`, options: ['a) 1','b) 4','c) 12','d) 31'], answer: 1 },
+      { question: `Week 3 - Q6. Timestamping a network packet is necessary for (i) Enabling time synchronization across router in network layer (ii) For defining packet lifetime.`, options: ['a) Only (i)','b) Only (ii)','c) Both (i) and (ii)','d) None of above'], answer: 2 },
+      { question: `Week 3 - Q7. Determine whether the following information is True or False? “During the three-way handshaking of connection establishment procedure, delayed duplicate SYN can be handled by TCP simply by ignoring it, as the sequence number is invalid”`, options: ['a) True','b) False'], answer: 0 },
+      { question: `Week 3 - Q8. In Go-Back-N ARQ, if any segment of the sliding window is lost, what happens compared to Selective Repeat ARQ?`, options: ['a) In Go-Back-N all packets in window retransmitted; in Selective Repeat only lost packets retransmitted','b) Opposite of (a)','c) In both cases all packets retransmitted','d) In both cases only lost packets retransmitted'], answer: 0 },
+      { question: `Week 3 - Q9. What is known as outstanding frames?`, options: ['a) Frames that are yet to be transmitted','b) Frames that have been transmitted, but not yet acknowledged','c) Acknowledged frames','d) None of the above'], answer: 1 },
+      { question: `Week 3 - Q10. TCP three-way handshake uses sequence numbers and acknowledgments to establish a reliable connection.`, options: ['a) True','b) False'], answer: 0 }
+    ],
+    4: [
+      { question: `Week 4 - Q1. Let the maximum TCP payload be 1450 Bytes; then what is the maximum network layer payload?`, options: ['a) 1450 Bytes','b) 1470 Bytes','c) 1430 Bytes','d) 1480 Bytes'], answer: 1 },
+      { question: `Week 4 - Q2. In a distributed system, a server advertises a receiver window of 0 and the updated acknowledgment is lost. What should the client do to prevent deadlock?`, options: ['a) Wait indefinitely','b) Resend data packets periodically','c) Use a keep-alive mechanism','d) Close the connection'], answer: 2 },
+      { question: `Week 4 - Q3. Which of the following statement(s) is/are true for the Transport Layer? (i) The transport layer protocol should be Stateful. (ii) Uses FTP protocols for ensuring flow control.`, options: ['a) Only (i)','b) Only (ii)','c) Both (i) and (ii)','d) None of the above'], answer: 0 },
+      { question: `Week 4 - Q4. Which TCP features help maintain reliable and ordered communication in high delays and packet reordering?`, options: ['a) (i), (iii), (iv)','b) (i), (ii), (iii)','c) (ii), (iii), (iv)','d) (i), (ii), (iv)'], answer: 3 },
+      { question: `Week 4 - Q5. In TCP connection release, why does the active closer enter TIME-WAIT after receiving the final ACK?`, options: ['a) Confirm FIN received','b) Allow passive closer resend data','c) Ensure delayed packets are discarded','d) Avoid reusing same port'], answer: 2 },
+      { question: `Week 4 - Q6. Consider a network with bandwidth 1 Mbps, delay 1 ms, and segment size 1 KB. Which relation is between BDP and segment size?`, options: ['a) BDP = 8 x (segment size)','b) BDP/4 = segment size','c) BDP/8 = segment size','d) BDP x 8 = segment size'], answer: 3 },
+      { question: `Week 4 - Q7. The use of a cryptographic function to generate sequence numbers for TCP connection is helpful to avoid`, options: ['a) TCP Congestion Overflow','b) DoS attack','c) TCP SYN flood attack','d) None of these'], answer: 2 },
+      { question: `Week 4 - Q8. AIMD starts at 1 Mbps. After four additive increases of 0.5 Mbps each, packet loss occurs. If multiplicative decrease factor is 0.5, new sending rate is`, options: ['a) 2.5 Mbps','b) 1 Mbps','c) 3 Mbps','d) 1.5 Mbps'], answer: 3 },
+      { question: `Week 4 - Q9. Which of the following conditions does not influence the segment size in TCP?`, options: ['a) MTU of the underlying link','b) Receiver\'s advertised window size','c) Network congestion window size','d) Header length of the IP protocol'], answer: 3 },
+      { question: `Week 4 - Q10. TCP uses acknowledgments and retransmissions to provide reliable data transfer.`, options: ['a) True','b) False'], answer: 0 }
+    ],
+    5: [
+      { question: `Week 5 - Q1. Sender Window in TCP can be given as:`, options: ['a) max(Congestion Window, Receiver Window)','b) Congestion Window','c) Receiver Window','d) min(Congestion Window, Receiver Window)'], answer: 3 },
+      { question: `Week 5 - Q2. What is the advantage of an iterative server over a concurrent server?`, options: ['a) Handles multiple requests faster','b) Easier to implement and debug','c) Supports asynchronous I/O','d) Lower response times for high traffic'], answer: 1 },
+      { question: `Week 5 - Q3. Which of the following uses UDP?`, options: ['a) DNS','b) POP','c) HTTP','d) FTP'], answer: 0 },
+      { question: `Week 5 - Q4. What impact does a higher α value have on Jacobson’s algorithm?`, options: ['a) Makes SRTT more sensitive to sudden RTT changes','b) Reduces the impact of new RTT measurements on SRTT','c) Increases weight of RTTVAR','d) Eliminates need for RTTVAR'], answer: 1 },
+      { question: `Week 5 - Q5. FD_ZERO is used for`, options: ['a) tests to see if a file descriptor is part of the set','b) Initializes the file descriptor set','c) Set a file descriptor as part of an fd_set','d) None of the above'], answer: 1 },
+      { question: `Week 5 - Q6. SOCK_DGRAM represents`, options: ['a) UDP-based Datagram Socket','b) TCP-based Stream Socket','c) QUIC-based Stream Socket','d) None of the above'], answer: 0 },
+      { question: `Week 5 - Q7. select() system call returns one when?`, options: ['a) Exactly one monitored file descriptor becomes ready','b) Call timed out','c) Zero is number of sockets ready','d) OS kills the process'], answer: 0 },
+      { question: `Week 5 - Q8. What does the listen() function do in socket programming?`, options: ['a) Binds a socket to an address','b) Puts socket into passive mode to wait for incoming connections','c) Actively connects to a server socket','d) Sends data over the socket'], answer: 1 },
+      { question: `Week 5 - Q9. TCP uses congestion control and both flow control and error control.`, options: ['a) True','b) False'], answer: 0 },
+      { question: `Week 5 - Q10. UDP is connectionless and does not guarantee delivery.`, options: ['a) True','b) False'], answer: 0 }
+    ],
+    6: [
+      { question: `Week 6 - Q1. In communication over an ISP, which layer is responsible for determining the best path for packet delivery?`, options: ['a) Transport Layer','b) Network Layer','c) Data Link Layer','d) Application Layer'], answer: 1 },
+      { question: `Week 6 - Q2. You need 500 subnets, each with about 100 usable host addresses per subnet. What network mask will you assign using a class B network address?`, options: ['a) 255.255.255.252','b) 255.255.255.128','c) 255.255.255.0','d) 255.255.254.0'], answer: 1 },
+      { question: `Week 6 - Q3. What type of address is "0.0.0.0" in IPv4?`, options: ['a) Loopback address','b) Default route address','c) Broadcast address','d) Unspecified address'], answer: 3 },
+      { question: `Week 6 - Q4. What is the primary function of the network layer in the TCP/IP model?`, options: ['a) Establish end-to-end connections','b) Ensure reliable data transfer','c) Handle logical addressing and routing of data','d) Encrypt and decrypt data'], answer: 2 },
+      { question: `Week 6 - Q5. When communicating between two nodes, what role does the transport layer protocol play?`, options: ['a) Routing the data packets','b) Providing logical addressing','c) Ensuring reliable or fast data delivery based on protocol choice','d) Forwarding data to next hop'], answer: 2 },
+      { question: `Week 6 - Q6. Which of the following is/are not a valid IPv6 address?`, options: ['a) AE82::1:800:23E7:F5DB','b) FC80:2:7:1:800:23E7:A:F5DB','c) DE62:6A42:1:5AC::800:23E7:F5DB','d) FE80:2030:31:24'], answer: 3 },
+      { question: `Week 6 - Q7. What is the maximum number of hosts under class B addresses?`, options: ['a) 254','b) 65534','c) 65535','d) 65536'], answer: 1 },
+      { question: `Week 6 - Q8. The header length of the IPv6 datagram is`, options: ['a) 10 bytes','b) 20 bytes','c) 30 bytes','d) 40 bytes'], answer: 3 },
+      { question: `Week 6 - Q9. What is the CIDR notation for a supernet that aggregates 192.168.0.0/24 and 192.168.1.0/24?`, options: ['a) 192.168.0.0/23','b) 192.168.0.0/24','c) 192.168.1.0/23','d) 192.168.0.0/22'], answer: 0 },
+      { question: `Week 6 - Q10. Routing is performed at the network layer using logical IP addressing.`, options: ['a) True','b) False'], answer: 0 }
+    ],
+    7: [
+      { question: `Week 7 - Q1. What is the transmission delay for pushing a packet of size 1MB through a network with a bandwidth 16Mbps?`, options: ['a) 2 seconds','b) 0.5 seconds','c) 1 second','d) 10 second'], answer: 1 },
+      { question: `Week 7 - Q2. File transfer applications require non-real-time variable bit rate (NRT-VBR). Is this statement true or false?`, options: ['a) True','b) False'], answer: 1 },
+      { question: `Week 7 - Q3. The primary goal of QoS is`, options: ['a) Degrade loss characteristics.','b) Control jitter','c) Increase communication latency','d) Reduce network security mechanisms'], answer: 1 },
+      { question: `Week 7 - Q4. Which of the following statements is TRUE?`, options: ['a) TCP is Inelastic Traffic and therefore not preferred for real-time video streaming.','b) TCP is Elastic Traffic and therefore preferred for real-time video streaming.','c) UDP is Elastic Traffic and therefore preferred for real-time video streaming.','d) UDP is Inelastic Traffic and therefore preferred for real-time video streaming.'], answer: 3 },
+      { question: `Week 7 - Q5. Based on QoS requirements, video conferencing comes under which class of application?`, options: ['a) Constant bit rate','b) Real-time variable bit rate','c) Non-real-time variable bitrate','d) Available bit rate or best-effort'], answer: 1 },
+      { question: `Week 7 - Q6. Which of the following is not a benefit of traffic shaping?`, options: ['a) Reducing network congestion','b) Controlling the rate of traffic flow','c) Improving network efficiency','d) Prioritizing certain types of traffic'], answer: 3 },
+      { question: `Week 7 - Q7. Which of the following is an example of a traffic scheduling algorithm?`, options: ['a) Weighted Fair Queuing (WFQ)','b) Leaky Bucket','c) Token Bucket','d) Random Early Detection (RED)'], answer: 0 },
+      { question: `Week 7 - Q8. Consider the token bucket algorithm, with token arrival rate = packet arrival rate = r per second. Bucket size is b. What is the maximum burst size (MBS) and the output rate?`, options: ['a) rb and r+b','b) No burst and rb','c) No burst and r','d) r + b and rb'], answer: 2 },
+      { question: `Week 7 - Q9. Which of the following statements about RSVP is FALSE?`, options: ['a) RSVP is difficult to implement on the internet because it requires coordination among intermediate routers.','b) All the RSVP daemons in all intermediate routers need to coordinate.','c) RSVP uses differentiated services fields in the IP header for traffic classification.','d) RSVP is a protocol of the IntServ QoS architecture.'], answer: 2 },
+      { question: `Week 7 - Q10. In RED with min threshold 40, max threshold 90, and current queue size 70, what is the drop probability?`, options: ['a) 20%','b) 40%','c) 60%','d) 80%'], answer: 0 }
+    ],
+    8: [
+      { question: `Week 8 - Q1. How does the router decide the destination if multiple entries in routing tables match the destination address?`, options: ['a) It picks the first one','b) It picks the destination with the longest prefix matching','c) It picks the destination with the shortest prefix matching','d) It picks the last matched destination'], answer: 1 },
+      { question: `Week 8 - Q2. Which routing protocol is used for intra-domain routing in the Internet?`, options: ['a) Border Gateway Protocol (BGP)','b) Routing Information Protocol (RIP)','c) Open Shortest Path First (OSPF)','d) Enhanced Interior Gateway Routing Protocol (EIGRP)'], answer: 2 },
+      { question: `Week 8 - Q3. In the BGP protocol, UPDATE and NOTIFICATION messages are used for:`, options: ['a) Exchanging reachability information and to notify an error.','b) Exchanging reachability information and confirming a BGP connection','c) Ensuring a BGP neighbor is alive and confirming a BGP connection','d) Opening a BGP connection and closing a BGP connection'], answer: 0 },
+      { question: `Week 8 - Q4. Why do we divide an IP address into network address and host address?`, options: ['a) To increase total number of IP addresses','b) Routers route based on host address','c) To avoid overhead of storing all possible host IP addresses in each router','d) For resolving IP addresses from domain name'], answer: 2 },
+      { question: `Week 8 - Q5. Router A has routes 192.168.1.0/24 -> B, 192.168.1.128/28 -> D, 192.168.2.0/24 -> C. If destination is 192.168.1.10, next hop is`, options: ['a) D','b) B','c) C','d) Broadcast'], answer: 1 },
+      { question: `Week 8 - Q6. How does a host know its own IP address and gateway IP without manual configuration?`, options: ['a) DNS','b) From its own routing table','c) ARP','d) DHCP'], answer: 3 },
+      { question: `Week 8 - Q7. Which data structure is used for speeding up Longest Prefix Matching in routers?`, options: ['a) Double Linked List','b) Segment Trees','c) Red Black Trees','d) Patricia Trees'], answer: 3 },
+      { question: `Week 8 - Q8. Which is TRUE about BGP routing protocol?`, options: ['a) It is an Intradomain routing protocol.','b) It is a Link State routing protocol','c) BGP relies on IGP for packet forwarding between IBGP peers.','d) BGP replaces the IGP protocol in an AS.'], answer: 2 },
+      { question: `Week 8 - Q9. If a router uses a Patricia Tree for IPv4 forwarding, what is the time complexity for longest prefix match?`, options: ['a) O(n²)','b) O(32)','c) O(n)','d) O(logn)'], answer: 1 },
+      { question: `Week 8 - Q10. In distance vector routing, if A has Z via B cost 8, receives Z cost 6 from C and Z cost 8 from D, and each link cost is 1, what will be A's updated route to Z?`, options: ['a) 8, B','b) 6, C','c) 9, D','d) 7, C'], answer: 3 }
+    ],
+    9: [
+      { question: `Week 9 - Q1. Which component of SDN is responsible for communicating with the controller?`, options: ['a) Data plane','b) Control plane','c) Management plane','d) Forwarding plane'], answer: 1 },
+      { question: `Week 9 - Q2. A subset of a network that includes all the routers but contains no loops is called`, options: ['a) Spanning tree','b) Spider structure','c) Spider tree','d) Special tree'], answer: 0 },
+      { question: `Week 9 - Q3. Which classes are used for connection-less socket programming?`, options: ['a) Datagram Socket','b) Datagram Packet','c) Both Datagram Socket & Datagram Packet','d) Server Socket'], answer: 2 },
+      { question: `Week 9 - Q4. Which of the following is NOT a function of a router?`, options: ['a) Path determination','b) Packet forwarding','c) Packet filtering','d) Packet retransmission'], answer: 3 },
+      { question: `Week 9 - Q5. What is the role of the OpenFlow protocol in SDN?`, options: ['a) To enable communication between the control plane and data plane','b) To provide encryption for network traffic','c) To monitor network performance and traffic','d) To manage network security'], answer: 0 },
+      { question: `Week 9 - Q6. Which type of Ethernet framing is used for TCP/IP and DEC net?`, options: ['a) Ethernet 802.3','b) Ethernet 802.2','c) Ethernet II','d) Ethernet SNAP'], answer: 2 },
+      { question: `Week 9 - Q7. Which of the following is not true regarding Forward Information Base (FIB)?`, options: ['a) The FIB mirrors the RIB','b) Responsible for merging the data plane and control plane together','c) Routing decisions are taken from FIB and not RIB','d) It is stored in TCAM Hardware'], answer: 1 },
+      { question: `Week 9 - Q8. What is the role of the northbound interface in SDN?`, options: ['a) To manage and configure network devices','b) To enable communication between the controller and applications','c) To monitor network performance and traffic','d) To provide network services to end users'], answer: 1 },
+      { question: `Week 9 - Q9. A network 192.168.10.0/24 needs at least 12 subnets. Which subnet mask should be used?`, options: ['a) 255.255.255.224','b) 255.255.255.240','c) 255.255.255.192','d) 255.255.255.248'], answer: 1 },
+      { question: `Week 9 - Q10. Which statements are true regarding the command: ip route 172.16.4.0 255.255.255.0 192.168.4.2 ?`, options: ['a) I and II','b) II and IV','c) III and IV','d) I, II, III and IV'], answer: 0 }
+    ],
+    10: [
+      { question: `Week 10 - Q1. Which is NOT one of the LLC services?`, options: ['a) Connection mode service','b) Acknowledged connectionless service','c) Intermediate switching service','d) Unacknowledged connectionless service'], answer: 2 },
+      { question: `Week 10 - Q2. IEEE 802.1 is concerned with which issue in LANs and MANs?`, options: ['a) Error handling','b) Networking','c) Internetworking','d) Flow control'], answer: 2 },
+      { question: `Week 10 - Q3. Which sublayer of the data link layer performs data link functions that depend upon the type of medium?`, options: ['a) Logical link control sublayer','b) Media access control sublayer','c) Network interface control sublayer','d) Error control sublayer'], answer: 1 },
+      { question: `Week 10 - Q4. In 10Base-T and 100Base-T Ethernet technology, what does the letter “T” represent?`, options: ['a) Transmission','b) Twisted Pair','c) Total utilization','d) Top Speed'], answer: 1 },
+      { question: `Week 10 - Q5. In Go-Back-N ARQ, if the window size is 63, what is the range of sequence numbers?`, options: ['a) 1 to 63','b) 1 to 64','c) 0 to 63','d) 0 to 64'], answer: 2 },
+      { question: `Week 10 - Q6. When 2 or more bits in a data unit have been changed during the transmission, the error is called`, options: ['a) Random error','b) Burst error','c) Inverted error','d) Double error'], answer: 1 },
+      { question: `Week 10 - Q7. Which of the following are correct about Asynchronous MAC techniques?`, options: ['a) Only I','b) Only II','c) Both I and II','d) Neither I nor II'], answer: 0 },
+      { question: `Week 10 - Q8. A pure ALOHA network transmits 200 bit frames on a shared channel with a data rate of 200 kbps. If the system generates 250 frames per second, what is the throughput?`, options: ['a) 38 frames','b) 48 frames','c) 96 frames','d) 126 frames'], answer: 0 },
+      { question: `Week 10 - Q9. Which of the following is/are true? I. In full-duplex switched Ethernet, there is no need for the CSMA/CD method. II. Ethernet is best utilized when the load is heavy. III. Slotted ALOHA has lower maximum utilization compared to pure ALOHA. IV. Random backoff in CSMA/CD reduces probability of simultaneous retransmission.`, options: ['a) I and IV','b) I and III','c) II and III','d) II and IV'], answer: 0 },
+      { question: `Week 10 - Q10. Ethernet and MAC protocols are fundamental to LAN communication.`, options: ['a) True','b) False'], answer: 0 }
+    ],
+    11: [
+      { question: `Week 11 - Q1. Which of the following addresses is used in Ethernet broadcast for ARP requests?`, options: ['a) 255.255.255.255','b) 255.255.255.254','c) FF:FF:FF:FF:FF:FF','d) 255.255.255.251'], answer: 2 },
+      { question: `Week 11 - Q2. Which field in an ARP packet is not filled in ARP Request but filled in ARP Reply?`, options: ['a) Target protocol address','b) Target hardware address','c) Sender protocol address','d) Sender hardware address'], answer: 1 },
+      { question: `Week 11 - Q3. Which protocol does DHCP use at the Transport layer?`, options: ['a) IP','b) ARP','c) UDP','d) TCP'], answer: 2 },
+      { question: `Week 11 - Q4. Which of the following is/are correct about RARP?`, options: ['a) RARP replies are broadcast.','b) RARP is often used on thin-client workstations.','c) In an RARP Request packet, the sender hardware address field is not filled.','d) RARP has been replaced by DHCP.'], answer: 1 },
+      { question: `Week 11 - Q5. To deal with hidden terminal and exposed station problems, all implementations of 802.11 WLAN must mandatorily support`, options: ['a) DCF','b) PCF','c) Both are mandatory','d) Both are optional'], answer: 0 },
+      { question: `Week 11 - Q6. When a new trunk link is configured on an IOS-based switch, which VLANs are allowed over the link?`, options: ['a) By default, all VLANs are allowed on the trunk.','b) No VLANs are allowed','c) Only configured VLANs are allowed','d) Only extended VLANs are allowed'], answer: 0 },
+      { question: `Week 11 - Q7. Which VLAN technique is used when a single link needs to carry traffic for multiple VLANs?`, options: ['a) Tailing','b) Trunking','c) Trading','d) Tapping'], answer: 1 },
+      { question: `Week 11 - Q8. A switch has VLAN2, VLAN3, VLAN4 and a router is added for inter-VLAN communication with one connection to the switch. What type of interface is necessary on the router?`, options: ['a) 10Mbps Ethernet','b) 56Kbps Serial','c) 100Mbps Ethernet','d) 1Gbps Ethernet'], answer: 2 },
+      { question: `Week 11 - Q9. Which of the following specifies a set of MAC and physical layer specifications for implementing WLANs?`, options: ['a) IEEE 802.16','b) IEEE 802.3','c) IEEE 802.11','d) IEEE 802.15'], answer: 2 },
+      { question: `Week 11 - Q10. ARP, DHCP, VLANs, and WLAN concepts are all part of practical LAN networking.`, options: ['a) True','b) False'], answer: 0 }
+    ]
+  };
+
+  const weekOrder = Object.keys(quizData).map(Number).sort((a,b) => a - b);
+
+  let currentWeek = weekOrder[0];
+  let currentQuestionIndex = 0;
+  let answers = {};
+  let weekScores = {};
+  let lastScreen = 'homeScreen';
+
+  function initState() {
+    answers = {};
+    weekScores = {};
+    weekOrder.forEach(week => {
+      answers[week] = new Array(quizData[week].length).fill(null);
+      weekScores[week] = null;
+    });
+  }
+  initState();
+
+  function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+  }
+
+  function startQuiz() {
+    startWeek(weekOrder[0]);
+  }
+
+  function startWeek(week) {
+    currentWeek = week;
+    currentQuestionIndex = 0;
+    lastScreen = 'quizScreen';
+    showScreen('quizScreen');
+    renderQuestion();
+  }
+
+  function renderQuestion() {
+    const weekQuestions = quizData[currentWeek];
+    const q = weekQuestions[currentQuestionIndex];
+    const answeredCount = answers[currentWeek].filter(v => v !== null).length;
+    const selected = answers[currentWeek][currentQuestionIndex];
+
+    document.getElementById('progressLabel').innerText = `Week ${currentWeek} — Question ${currentQuestionIndex + 1} of ${weekQuestions.length}`;
+    document.getElementById('answeredLabel').innerText = `Answered: ${answeredCount} / ${weekQuestions.length}`;
+    document.getElementById('weekMeta').innerText = `Week ${currentWeek}`;
+    document.getElementById('questionMeta').innerText = `${currentQuestionIndex + 1} / ${weekQuestions.length}`;
+    document.getElementById('selectedMeta').innerText = selected !== null ? q.options[selected] : 'None';
+    document.getElementById('questionText').innerText = q.question;
+
+    const progressPercent = ((currentQuestionIndex + 1) / weekQuestions.length) * 100;
+    document.getElementById('progressFill').style.width = `${progressPercent}%`;
+
+    const optionsContainer = document.getElementById('optionsContainer');
+    optionsContainer.innerHTML = '';
+
+    q.options.forEach((opt, index) => {
+      const label = document.createElement('label');
+      label.className = 'option';
+
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = 'option';
+      radio.value = index;
+
+      if (answers[currentWeek][currentQuestionIndex] === index) {
+        radio.checked = true;
+        label.classList.add('selected');
+      }
+
+      radio.addEventListener('change', () => {
+        answers[currentWeek][currentQuestionIndex] = index;
+        renderQuestion();
+      });
+
+      label.appendChild(radio);
+      label.appendChild(document.createTextNode(opt));
+      optionsContainer.appendChild(label);
+    });
+
+    document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
+    const isLast = currentQuestionIndex === weekQuestions.length - 1;
+    document.getElementById('nextBtn').style.display = isLast ? 'none' : 'inline-flex';
+    document.getElementById('submitBtn').style.display = isLast ? 'inline-flex' : 'none';
+  }
+
+  function nextQuestion() {
+    if (answers[currentWeek][currentQuestionIndex] === null) {
+      alert('Please select an answer before moving to the next question.');
+      return;
+    }
+    currentQuestionIndex++;
+    renderQuestion();
+  }
+
+  function prevQuestion() {
+    if (currentQuestionIndex > 0) {
+      currentQuestionIndex--;
+      renderQuestion();
+    }
+  }
+
+  function submitWeek() {
+    if (answers[currentWeek][currentQuestionIndex] === null) {
+      alert('Please select an answer before submitting.');
+      return;
+    }
+
+    const questions = quizData[currentWeek];
+    let score = 0;
+    questions.forEach((q, i) => {
+      if (answers[currentWeek][i] === q.answer) score++;
+    });
+
+    weekScores[currentWeek] = score;
+    showWeekResult(currentWeek);
+  }
+
+  function getCardClass(percent) {
+    let cardClass = 'score-card';
+    if (percent < 50) cardClass += ' bad';
+    else if (percent < 70) cardClass += ' amber';
+    return cardClass;
+  }
+
+  function getPerformanceText(percent) {
+    if (percent >= 90) return 'Excellent work.';
+    if (percent >= 75) return 'Very good performance.';
+    if (percent >= 60) return 'Good attempt. Keep revising.';
+    if (percent >= 40) return 'Fair attempt. Needs more revision.';
+    return 'More practice needed — keep going.';
+  }
+
+  function showWeekResult(week) {
+    currentWeek = week;
+    lastScreen = 'resultScreen';
+    showScreen('resultScreen');
+
+    const total = quizData[week].length;
+    const score = weekScores[week] || 0;
+    const percent = Math.round((score / total) * 100);
+
+    document.getElementById('resultTitle').innerText = `Week ${week} Result`;
+    document.getElementById('weekSummaryWeek').innerText = `Week ${week}`;
+    document.getElementById('weekSummaryScore').innerText = `${score} / ${total}`;
+    document.getElementById('weekSummaryPercent').innerText = `${percent}%`;
+
+    const card = document.getElementById('weekScoreCard');
+    card.className = getCardClass(percent);
+    card.innerHTML = `
+      <h3>Your Week ${week} Score: ${score} / ${total}</h3>
+      <p><strong>Percentage:</strong> ${percent}%</p>
+      <p>${getPerformanceText(percent)}</p>
+    `;
+
+    const idx = weekOrder.indexOf(week);
+    const hasNext = idx < weekOrder.length - 1;
+    const nextWeekBtn = document.getElementById('nextWeekBtn');
+    const finalBtn = document.getElementById('finalSummaryBtn');
+
+    if (hasNext) {
+      const nextWeek = weekOrder[idx + 1];
+      nextWeekBtn.style.display = 'inline-flex';
+      nextWeekBtn.textContent = `Start Week ${nextWeek}`;
+      nextWeekBtn.onclick = () => startWeek(nextWeek);
+      finalBtn.style.display = 'none';
+    } else {
+      nextWeekBtn.style.display = 'none';
+      finalBtn.style.display = 'inline-flex';
+    }
+  }
+
+  function reviewCurrentWeek() {
+    buildReview([currentWeek], false);
+  }
+
+  function reviewAllAnswers() {
+    buildReview(weekOrder, true);
+  }
+
+  function buildReview(weeksToShow, fromFinal) {
+    lastScreen = fromFinal ? 'finalScreen' : 'resultScreen';
+    showScreen('reviewScreen');
+
+    document.getElementById('reviewTitle').innerText = fromFinal ? 'All Weeks Answer Review' : `Week ${currentWeek} Answer Review`;
+    document.getElementById('reviewSubtitle').innerText = fromFinal
+      ? 'Your selected answers vs correct answers across all loaded weeks'
+      : `Your selected answers vs correct answers for Week ${currentWeek}`;
+
+    const jump = document.getElementById('reviewWeekJump');
+    jump.innerHTML = '';
+
+    if (fromFinal) {
+      weekOrder.forEach(week => {
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-outline';
+        btn.textContent = `Week ${week}`;
+        btn.onclick = () => buildReview([week], true);
+        jump.appendChild(btn);
+      });
+
+      const allBtn = document.createElement('button');
+      allBtn.className = 'btn btn-solid';
+      allBtn.textContent = 'All Weeks';
+      allBtn.onclick = () => buildReview(weekOrder, true);
+      jump.appendChild(allBtn);
+    }
+
+    const reviewList = document.getElementById('reviewList');
+    reviewList.innerHTML = '';
+
+    weeksToShow.forEach(week => {
+      const weekScore = weekScores[week];
+      const total = quizData[week].length;
+
+      const header = document.createElement('div');
+      header.className = 'review-header';
+      header.innerHTML = `<span>Week ${week}</span><span class="score-chip">${weekScore !== null ? weekScore : 0} / ${total}</span>`;
+      reviewList.appendChild(header);
+
+      quizData[week].forEach((q, i) => {
+        const userAns = answers[week][i];
+        const correctAns = q.answer;
+        const isCorrect = userAns === correctAns;
+
+        const card = document.createElement('div');
+        card.className = 'review-item';
+
+        const userText = userAns !== null ? escapeHtml(q.options[userAns]) : 'Not answered';
+        const correctText = escapeHtml(q.options[correctAns]);
+
+        card.innerHTML = `
+          <span class="badge ${isCorrect ? 'correct' : 'wrong'}">${isCorrect ? 'Correct' : 'Wrong'}</span>
+          <div class="review-question">Q${i + 1}. ${q.question.replace(/\n/g, '<br>')}</div>
+          <div class="answer-row ${isCorrect ? 'user-correct' : 'user-wrong'}">
+            <strong>Your answer:</strong> ${userText}
+          </div>
+          ${!isCorrect ? `<div class="answer-row correct-ans"><strong>Correct answer:</strong> ${correctText}</div>` : ''}
+        `;
+        reviewList.appendChild(card);
+      });
+    });
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.innerText = str;
+    return div.innerHTML;
+  }
+
+  function backFromReview() {
+    showScreen(lastScreen);
+  }
+
+  function goToNextWeek() {
+    const idx = weekOrder.indexOf(currentWeek);
+    if (idx < weekOrder.length - 1) {
+      startWeek(weekOrder[idx + 1]);
+    }
+  }
+
+  function showFinalSummary() {
+    lastScreen = 'finalScreen';
+    showScreen('finalScreen');
+
+    const first = weekOrder[0];
+    const second = weekOrder[1] ?? first;
+    document.getElementById('finalWeek1Score').innerText = `${weekScores[first] || 0} / ${quizData[first].length}`;
+    document.getElementById('finalWeek2Score').innerText = `${weekScores[second] || 0} / ${quizData[second].length}`;
+
+    let total = 0;
+    let totalQ = 0;
+    weekOrder.forEach(week => {
+      total += (weekScores[week] || 0);
+      totalQ += quizData[week].length;
+    });
+
+    const percent = Math.round((total / totalQ) * 100);
+    document.getElementById('finalTotalScore').innerText = `${total} / ${totalQ}`;
+
+    const card = document.getElementById('finalScoreCard');
+    card.className = getCardClass(percent);
+    card.innerHTML = `
+      <h3>Total Score: ${total} / ${totalQ}</h3>
+      <p><strong>Overall:</strong> ${percent}%</p>
+      <p>${getPerformanceText(percent)}</p>
+      <p style="margin-top:8px; color: var(--text-3); font-size:13px;">Tap "View All Answers" to review your responses from all loaded weeks.</p>
+    `;
+  }
+
+  function restartAll() {
+    initState();
+    currentWeek = weekOrder[0];
+    currentQuestionIndex = 0;
+    lastScreen = 'homeScreen';
+    showScreen('homeScreen');
+  }
+</script>
+
+</body>
+</html>
