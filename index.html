@@ -71,7 +71,37 @@
       letter-spacing: -.02em;
       color: var(--text);
     }
+    .home-banner {
+      grid-column: 1 / -1;
+      width: 100%;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      background: var(--card);
+      margin-top: 16px;
+      text-align: center;
+      padding: 12px;
+    }
 
+    .home-banner img {
+      max-width: 100%;
+      height: auto;
+      max-height: 260px;
+      display: inline-block;
+      border-radius: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .home-banner {
+        grid-column: auto;
+        padding: 10px;
+      }
+
+      .home-banner img {
+        max-height: 180px;
+      }
+    }
     /* ── Buttons ── */
     .btn {
       display: inline-flex;
@@ -629,6 +659,9 @@
             Open Drive Folder ↗
           </a>
         </p>
+      </div>
+      <div class="home-banner">
+        <img src="https://media.tenor.com/MT1WVYwZi0AAAAAe/moraipu-govt-schl-girl.png" alt="NPTEL Quiz Banner">
       </div>
     </div>
   </section>
