@@ -22,8 +22,6 @@ Made for students who want to practice **one question at a time**, check **week-
 ## 🛠️ Built With
 
 * **HTML**
-* **CSS**
-* **JavaScript**
 
 No frameworks.
 No extra setup drama.
