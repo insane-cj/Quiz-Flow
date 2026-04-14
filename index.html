@@ -596,7 +596,7 @@
   <section id="homeScreen" class="screen active">
     <div class="home-grid">
       <div class="card home-main">
-        <h2>Practice Quiz</h2>
+        <h2>Practice Quiz NPTEL</h2>
         <p>Work through each week one question at a time. See your score at the end of each week, then review your answers in detail.</p>
         <ul class="feature-list">
           <strong>Made by சிஜே.</strong><br>
@@ -1298,7 +1298,7 @@ S3: IMAP4 is more secure than POP3`, options: ['a) Only S1','b) Only S2','c) S2 
         card.innerHTML = `
           ${msq ? '<span class="msq-badge">Multiple Select</span> ' : ''}
           <span class="badge ${isCorrect ? 'correct' : 'wrong'}">${isCorrect ? 'Correct' : 'Wrong'}</span>
-          <div class="review-question">Q${i + 1}. ${q.question.replace(/\n/g, '<br>')}</div>
+          <div class="review-question">${q.question.replace(/\n/g, '<br>')}</div>
           <div class="answer-row ${isCorrect ? 'user-correct' : 'user-wrong'}">
             <strong>Your answer:</strong><br>${userText}
           </div>
