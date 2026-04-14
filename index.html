@@ -506,6 +506,70 @@
       margin-bottom: 16px;
     }
 
+    /* ── Week Selection Screen ── */
+    .week-select-header { margin-bottom: 22px; }
+    .week-select-header h2 { font-size: 22px; font-weight: 700; letter-spacing: -.02em; margin-bottom: 6px; }
+    .week-select-header p { font-size: 14px; color: var(--text-2); }
+
+    .week-select-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+
+    .week-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+
+    .week-tile {
+      position: relative;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: white;
+      padding: 14px 12px 12px;
+      cursor: pointer;
+      transition: border-color .15s, background .15s, box-shadow .15s;
+      user-select: none;
+    }
+    .week-tile:hover { border-color: var(--border-strong); background: var(--bg); }
+    .week-tile.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+    .week-tile input[type="checkbox"] {
+      position: absolute; top: 10px; right: 10px;
+      accent-color: var(--accent); width: 15px; height: 15px;
+    }
+    .week-tile-label { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+    .week-tile-count { font-size: 11.5px; color: var(--text-3); }
+
+    .week-select-summary {
+      font-size: 13px; color: var(--text-2); margin-bottom: 16px; min-height: 18px;
+    }
+    .week-select-summary strong { color: var(--text); }
+
+    /* ── MSQ badge ── */
+    .msq-badge {
+      display: inline-block;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      background: var(--amber-bg);
+      color: var(--amber);
+      border: 1px solid #e8d098;
+      border-radius: 4px;
+      padding: 2px 7px;
+      margin-bottom: 12px;
+    }
+
+    .option input[type="checkbox"] {
+      margin-top: 2px;
+      accent-color: var(--accent);
+      flex-shrink: 0;
+    }
+
     /* ── Responsive ── */
     @media (max-width: 600px) {
       .home-grid { grid-template-columns: 1fr; }
@@ -513,6 +577,7 @@
       .summary-grid { grid-template-columns: 1fr; }
       .home-main h2 { font-size: 22px; }
       .app { padding: 20px 16px 48px; }
+      .week-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
     }
   </style>
 </head>
@@ -539,7 +604,7 @@
           <li>Chatgpt Mama</li>
           <li>Claude Chithi</li>
         </ul>
-        <button class="btn btn-solid" onclick="startQuiz()">Start Quiz</button>
+        <button class="btn btn-solid" onclick="showWeekSelect()">Attempt Quiz</button>
       </div>
 
       <div class="card mini-card">
@@ -554,6 +619,24 @@
         <h4>Review Mode</h4>
         <p>After each week, inspect your answers against the correct ones.</p>
       </div>
+    </div>
+  </section>
+
+  <!-- WEEK SELECTION -->
+  <section id="weekSelectScreen" class="screen">
+    <div class="week-select-header">
+      <h2>Select Weeks to Attempt</h2>
+      <p>Choose one or more weeks. The quiz will run through them in order.</p>
+    </div>
+    <div class="week-select-actions">
+      <button class="btn btn-ghost" onclick="selectAllWeeks()">Select All</button>
+      <button class="btn btn-ghost" onclick="clearAllWeeks()">Clear All</button>
+    </div>
+    <div class="week-grid" id="weekGrid"></div>
+    <div class="week-select-summary" id="weekSelectSummary">No weeks selected.</div>
+    <div class="nav-row">
+      <button class="btn btn-ghost" onclick="showScreen('homeScreen')">Back</button>
+      <button class="btn btn-solid" id="startSelectedBtn" onclick="startSelectedWeeks()" disabled>Start Quiz</button>
     </div>
   </section>
 
@@ -648,11 +731,11 @@
 
     <div class="summary-grid">
       <div class="summary-box">
-        <div class="summary-label">Week 1</div>
+        <div class="summary-label" id="finalWeek1Label">Week 1</div>
         <div class="summary-value" id="finalWeek1Score">—</div>
       </div>
       <div class="summary-box">
-        <div class="summary-label">Week 2</div>
+        <div class="summary-label" id="finalWeek2Label">Week 2</div>
         <div class="summary-value" id="finalWeek2Score">—</div>
       </div>
       <div class="summary-box">
@@ -866,26 +949,124 @@ S3: IMAP4 is more secure than POP3`, options: ['a) Only S1','b) Only S2','c) S2 
   let answers = {};
   let weekScores = {};
   let lastScreen = 'homeScreen';
+  let selectedWeeks = [...weekOrder];
+
+  /* ── helpers ── */
+  function isMSQ(q) { return Array.isArray(q.answer); }
+
+  function answersEqual(a, b) {
+    if (!Array.isArray(a) || !Array.isArray(b)) return a === b;
+    if (a.length !== b.length) return false;
+    return [...a].sort((x,y)=>x-y).every((v,i) => v === [...b].sort((x,y)=>x-y)[i]);
+  }
+
+  function isAnswered(val) {
+    if (val === null || val === undefined) return false;
+    if (Array.isArray(val)) return val.length > 0;
+    return true;
+  }
 
   function initState() {
     answers = {};
     weekScores = {};
     weekOrder.forEach(week => {
-      answers[week] = new Array(quizData[week].length).fill(null);
+      answers[week] = quizData[week].map(q => isMSQ(q) ? [] : null);
       weekScores[week] = null;
     });
   }
   initState();
 
+  /* ── Screen ── */
   function showScreen(screenId) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(screenId).classList.add('active');
   }
 
-  function startQuiz() {
-    startWeek(weekOrder[0]);
+  /* ── Week Selection ── */
+  function showWeekSelect() {
+    const grid = document.getElementById('weekGrid');
+    grid.innerHTML = '';
+    weekOrder.forEach(week => {
+      const tile = document.createElement('label');
+      tile.className = 'week-tile' + (selectedWeeks.includes(week) ? ' selected' : '');
+      tile.setAttribute('data-week', week);
+
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = selectedWeeks.includes(week);
+      cb.addEventListener('change', () => {
+        if (cb.checked) {
+          if (!selectedWeeks.includes(week)) selectedWeeks.push(week);
+          selectedWeeks.sort((a,b) => a - b);
+          tile.classList.add('selected');
+        } else {
+          selectedWeeks = selectedWeeks.filter(w => w !== week);
+          tile.classList.remove('selected');
+        }
+        updateWeekSelectSummary();
+      });
+
+      const lbl = document.createElement('div');
+      lbl.className = 'week-tile-label';
+      lbl.textContent = `Week ${week}`;
+
+      const cnt = document.createElement('div');
+      cnt.className = 'week-tile-count';
+      cnt.textContent = `${quizData[week].length} questions`;
+
+      tile.appendChild(cb);
+      tile.appendChild(lbl);
+      tile.appendChild(cnt);
+      grid.appendChild(tile);
+    });
+    updateWeekSelectSummary();
+    showScreen('weekSelectScreen');
   }
 
+  function updateWeekSelectSummary() {
+    const summary = document.getElementById('weekSelectSummary');
+    const btn = document.getElementById('startSelectedBtn');
+    if (selectedWeeks.length === 0) {
+      summary.innerHTML = 'No weeks selected.';
+      btn.disabled = true;
+    } else {
+      const totalQ = selectedWeeks.reduce((s,w) => s + quizData[w].length, 0);
+      const names = selectedWeeks.map(w => `Week ${w}`).join(', ');
+      summary.innerHTML = `<strong>${selectedWeeks.length} week${selectedWeeks.length > 1 ? 's' : ''} selected</strong> &mdash; ${names} &mdash; ${totalQ} questions total`;
+      btn.disabled = false;
+    }
+  }
+
+  function selectAllWeeks() {
+    selectedWeeks = [...weekOrder];
+    document.querySelectorAll('.week-tile').forEach(tile => {
+      tile.classList.add('selected');
+      tile.querySelector('input').checked = true;
+    });
+    updateWeekSelectSummary();
+  }
+
+  function clearAllWeeks() {
+    selectedWeeks = [];
+    document.querySelectorAll('.week-tile').forEach(tile => {
+      tile.classList.remove('selected');
+      tile.querySelector('input').checked = false;
+    });
+    updateWeekSelectSummary();
+  }
+
+  function startSelectedWeeks() {
+    if (selectedWeeks.length === 0) return;
+    selectedWeeks.forEach(week => {
+      answers[week] = quizData[week].map(q => isMSQ(q) ? [] : null);
+      weekScores[week] = null;
+    });
+    startWeek(selectedWeeks[0]);
+  }
+
+  function startQuiz() { showWeekSelect(); }
+
+  /* ── Quiz ── */
   function startWeek(week) {
     currentWeek = week;
     currentQuestionIndex = 0;
@@ -897,14 +1078,23 @@ S3: IMAP4 is more secure than POP3`, options: ['a) Only S1','b) Only S2','c) S2 
   function renderQuestion() {
     const weekQuestions = quizData[currentWeek];
     const q = weekQuestions[currentQuestionIndex];
-    const answeredCount = answers[currentWeek].filter(v => v !== null).length;
+    const msq = isMSQ(q);
+    const answeredCount = answers[currentWeek].filter(v => isAnswered(v)).length;
     const selected = answers[currentWeek][currentQuestionIndex];
 
-    document.getElementById('progressLabel').innerText = `Week ${currentWeek} — Question ${currentQuestionIndex + 1} of ${weekQuestions.length}`;
+    document.getElementById('progressLabel').innerText = `Week ${currentWeek} \u2014 Question ${currentQuestionIndex + 1} of ${weekQuestions.length}`;
     document.getElementById('answeredLabel').innerText = `Answered: ${answeredCount} / ${weekQuestions.length}`;
     document.getElementById('weekMeta').innerText = `Week ${currentWeek}`;
     document.getElementById('questionMeta').innerText = `${currentQuestionIndex + 1} / ${weekQuestions.length}`;
-    document.getElementById('selectedMeta').innerText = selected !== null ? q.options[selected] : 'None';
+
+    // selectedMeta
+    if (msq) {
+      document.getElementById('selectedMeta').innerText =
+        selected.length > 0 ? selected.map(i => q.options[i].split(')')[0].trim()).join(', ') : 'None';
+    } else {
+      document.getElementById('selectedMeta').innerText = selected !== null ? q.options[selected] : 'None';
+    }
+
     document.getElementById('questionText').innerText = q.question;
 
     const progressPercent = ((currentQuestionIndex + 1) / weekQuestions.length) * 100;
@@ -913,26 +1103,43 @@ S3: IMAP4 is more secure than POP3`, options: ['a) Only S1','b) Only S2','c) S2 
     const optionsContainer = document.getElementById('optionsContainer');
     optionsContainer.innerHTML = '';
 
+    // MSQ badge
+    if (msq) {
+      const badge = document.createElement('div');
+      badge.className = 'msq-badge';
+      badge.textContent = 'Multiple Select';
+      optionsContainer.appendChild(badge);
+    }
+
     q.options.forEach((opt, index) => {
       const label = document.createElement('label');
       label.className = 'option';
 
-      const radio = document.createElement('input');
-      radio.type = 'radio';
-      radio.name = 'option';
-      radio.value = index;
+      const input = document.createElement('input');
+      input.name = 'option';
+      input.value = index;
 
-      if (answers[currentWeek][currentQuestionIndex] === index) {
-        radio.checked = true;
-        label.classList.add('selected');
+      if (msq) {
+        input.type = 'checkbox';
+        input.checked = selected.includes(index);
+        if (selected.includes(index)) label.classList.add('selected');
+        input.addEventListener('change', () => {
+          const cur = answers[currentWeek][currentQuestionIndex];
+          if (input.checked) { if (!cur.includes(index)) cur.push(index); }
+          else { answers[currentWeek][currentQuestionIndex] = cur.filter(i => i !== index); }
+          renderQuestion();
+        });
+      } else {
+        input.type = 'radio';
+        input.checked = selected === index;
+        if (selected === index) label.classList.add('selected');
+        input.addEventListener('change', () => {
+          answers[currentWeek][currentQuestionIndex] = index;
+          renderQuestion();
+        });
       }
 
-      radio.addEventListener('change', () => {
-        answers[currentWeek][currentQuestionIndex] = index;
-        renderQuestion();
-      });
-
-      label.appendChild(radio);
+      label.appendChild(input);
       label.appendChild(document.createTextNode(opt));
       optionsContainer.appendChild(label);
     });
@@ -944,7 +1151,7 @@ S3: IMAP4 is more secure than POP3`, options: ['a) Only S1','b) Only S2','c) S2 
   }
 
   function nextQuestion() {
-    if (answers[currentWeek][currentQuestionIndex] === null) {
+    if (!isAnswered(answers[currentWeek][currentQuestionIndex])) {
       alert('Please select an answer before moving to the next question.');
       return;
     }
@@ -953,33 +1160,29 @@ S3: IMAP4 is more secure than POP3`, options: ['a) Only S1','b) Only S2','c) S2 
   }
 
   function prevQuestion() {
-    if (currentQuestionIndex > 0) {
-      currentQuestionIndex--;
-      renderQuestion();
-    }
+    if (currentQuestionIndex > 0) { currentQuestionIndex--; renderQuestion(); }
   }
 
   function submitWeek() {
-    if (answers[currentWeek][currentQuestionIndex] === null) {
+    if (!isAnswered(answers[currentWeek][currentQuestionIndex])) {
       alert('Please select an answer before submitting.');
       return;
     }
-
     const questions = quizData[currentWeek];
     let score = 0;
     questions.forEach((q, i) => {
-      if (answers[currentWeek][i] === q.answer) score++;
+      if (answersEqual(answers[currentWeek][i], q.answer)) score++;
     });
-
     weekScores[currentWeek] = score;
     showWeekResult(currentWeek);
   }
 
+  /* ── Results ── */
   function getCardClass(percent) {
-    let cardClass = 'score-card';
-    if (percent < 50) cardClass += ' bad';
-    else if (percent < 70) cardClass += ' amber';
-    return cardClass;
+    let c = 'score-card';
+    if (percent < 50) c += ' bad';
+    else if (percent < 70) c += ' amber';
+    return c;
   }
 
   function getPerformanceText(percent) {
@@ -1012,13 +1215,13 @@ S3: IMAP4 is more secure than POP3`, options: ['a) Only S1','b) Only S2','c) S2 
       <p>${getPerformanceText(percent)}</p>
     `;
 
-    const idx = weekOrder.indexOf(week);
-    const hasNext = idx < weekOrder.length - 1;
+    const idx = selectedWeeks.indexOf(week);
+    const hasNext = idx < selectedWeeks.length - 1;
     const nextWeekBtn = document.getElementById('nextWeekBtn');
     const finalBtn = document.getElementById('finalSummaryBtn');
 
     if (hasNext) {
-      const nextWeek = weekOrder[idx + 1];
+      const nextWeek = selectedWeeks[idx + 1];
       nextWeekBtn.style.display = 'inline-flex';
       nextWeekBtn.textContent = `Start Week ${nextWeek}`;
       nextWeekBtn.onclick = () => startWeek(nextWeek);
@@ -1029,13 +1232,9 @@ S3: IMAP4 is more secure than POP3`, options: ['a) Only S1','b) Only S2','c) S2 
     }
   }
 
-  function reviewCurrentWeek() {
-    buildReview([currentWeek], false);
-  }
-
-  function reviewAllAnswers() {
-    buildReview(weekOrder, true);
-  }
+  /* ── Review ── */
+  function reviewCurrentWeek() { buildReview([currentWeek], false); }
+  function reviewAllAnswers() { buildReview(selectedWeeks, true); }
 
   function buildReview(weeksToShow, fromFinal) {
     lastScreen = fromFinal ? 'finalScreen' : 'resultScreen';
@@ -1043,25 +1242,24 @@ S3: IMAP4 is more secure than POP3`, options: ['a) Only S1','b) Only S2','c) S2 
 
     document.getElementById('reviewTitle').innerText = fromFinal ? 'All Weeks Answer Review' : `Week ${currentWeek} Answer Review`;
     document.getElementById('reviewSubtitle').innerText = fromFinal
-      ? 'Your selected answers vs correct answers across all loaded weeks'
+      ? 'Your selected answers vs correct answers across selected weeks'
       : `Your selected answers vs correct answers for Week ${currentWeek}`;
 
     const jump = document.getElementById('reviewWeekJump');
     jump.innerHTML = '';
 
     if (fromFinal) {
-      weekOrder.forEach(week => {
+      selectedWeeks.forEach(week => {
         const btn = document.createElement('button');
         btn.className = 'btn btn-outline';
         btn.textContent = `Week ${week}`;
         btn.onclick = () => buildReview([week], true);
         jump.appendChild(btn);
       });
-
       const allBtn = document.createElement('button');
       allBtn.className = 'btn btn-solid';
       allBtn.textContent = 'All Weeks';
-      allBtn.onclick = () => buildReview(weekOrder, true);
+      allBtn.onclick = () => buildReview(selectedWeeks, true);
       jump.appendChild(allBtn);
     }
 
@@ -1078,23 +1276,33 @@ S3: IMAP4 is more secure than POP3`, options: ['a) Only S1','b) Only S2','c) S2 
       reviewList.appendChild(header);
 
       quizData[week].forEach((q, i) => {
+        const msq = isMSQ(q);
         const userAns = answers[week][i];
         const correctAns = q.answer;
-        const isCorrect = userAns === correctAns;
+        const isCorrect = answersEqual(userAns, correctAns);
 
         const card = document.createElement('div');
         card.className = 'review-item';
 
-        const userText = userAns !== null ? escapeHtml(q.options[userAns]) : 'Not answered';
-        const correctText = escapeHtml(q.options[correctAns]);
+        let userText, correctText;
+        if (msq) {
+          userText = (Array.isArray(userAns) && userAns.length > 0)
+            ? userAns.map(idx => escapeHtml(q.options[idx])).join('<br>')
+            : 'Not answered';
+          correctText = correctAns.map(idx => escapeHtml(q.options[idx])).join('<br>');
+        } else {
+          userText = (userAns !== null && userAns !== undefined) ? escapeHtml(q.options[userAns]) : 'Not answered';
+          correctText = escapeHtml(q.options[correctAns]);
+        }
 
         card.innerHTML = `
+          ${msq ? '<span class="msq-badge">Multiple Select</span> ' : ''}
           <span class="badge ${isCorrect ? 'correct' : 'wrong'}">${isCorrect ? 'Correct' : 'Wrong'}</span>
           <div class="review-question">Q${i + 1}. ${q.question.replace(/\n/g, '<br>')}</div>
           <div class="answer-row ${isCorrect ? 'user-correct' : 'user-wrong'}">
-            <strong>Your answer:</strong> ${userText}
+            <strong>Your answer:</strong><br>${userText}
           </div>
-          ${!isCorrect ? `<div class="answer-row correct-ans"><strong>Correct answer:</strong> ${correctText}</div>` : ''}
+          ${!isCorrect ? `<div class="answer-row correct-ans"><strong>Correct answer:</strong><br>${correctText}</div>` : ''}
         `;
         reviewList.appendChild(card);
       });
@@ -1107,29 +1315,27 @@ S3: IMAP4 is more secure than POP3`, options: ['a) Only S1','b) Only S2','c) S2 
     return div.innerHTML;
   }
 
-  function backFromReview() {
-    showScreen(lastScreen);
-  }
+  function backFromReview() { showScreen(lastScreen); }
 
   function goToNextWeek() {
-    const idx = weekOrder.indexOf(currentWeek);
-    if (idx < weekOrder.length - 1) {
-      startWeek(weekOrder[idx + 1]);
-    }
+    const idx = selectedWeeks.indexOf(currentWeek);
+    if (idx < selectedWeeks.length - 1) startWeek(selectedWeeks[idx + 1]);
   }
 
+  /* ── Final Summary ── */
   function showFinalSummary() {
     lastScreen = 'finalScreen';
     showScreen('finalScreen');
 
-    const first = weekOrder[0];
-    const second = weekOrder[1] ?? first;
+    const first = selectedWeeks[0];
+    const second = selectedWeeks[1] ?? null;
+    document.getElementById('finalWeek1Label').innerText = `Week ${first}`;
     document.getElementById('finalWeek1Score').innerText = `${weekScores[first] || 0} / ${quizData[first].length}`;
-    document.getElementById('finalWeek2Score').innerText = `${weekScores[second] || 0} / ${quizData[second].length}`;
+    document.getElementById('finalWeek2Label').innerText = second !== null ? `Week ${second}` : '—';
+    document.getElementById('finalWeek2Score').innerText = second !== null ? `${weekScores[second] || 0} / ${quizData[second].length}` : '—';
 
-    let total = 0;
-    let totalQ = 0;
-    weekOrder.forEach(week => {
+    let total = 0, totalQ = 0;
+    selectedWeeks.forEach(week => {
       total += (weekScores[week] || 0);
       totalQ += quizData[week].length;
     });
@@ -1143,12 +1349,13 @@ S3: IMAP4 is more secure than POP3`, options: ['a) Only S1','b) Only S2','c) S2 
       <h3>Total Score: ${total} / ${totalQ}</h3>
       <p><strong>Overall:</strong> ${percent}%</p>
       <p>${getPerformanceText(percent)}</p>
-      <p style="margin-top:8px; color: var(--text-3); font-size:13px;">Tap "View All Answers" to review your responses from all loaded weeks.</p>
+      <p style="margin-top:8px; color: var(--text-3); font-size:13px;">Tap "View All Answers" to review your responses from all selected weeks.</p>
     `;
   }
 
   function restartAll() {
     initState();
+    selectedWeeks = [...weekOrder];
     currentWeek = weekOrder[0];
     currentQuestionIndex = 0;
     lastScreen = 'homeScreen';
