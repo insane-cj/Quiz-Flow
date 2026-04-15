@@ -644,18 +644,18 @@
 
       <div class="card mini-card">
         <h4>Quiz Structure</h4>
-        <p>• Idhu en korangu<br>• Thuppaki ya pudinga Siva</p>
+        <p>• Idhu en korangu<br>• Thuppaki ya pudinga Siva<br>Vathiyar: Inga ennya nadakuthu<br>Kabilan: Nee than nadakura</p>
       </div>
       <div class="card mini-card">
         <h4>Scoring</h4>
-        <p>• 1 mark per question<br>• Dhamma thundu blade mela nee vacha nambikaya un mela vei</p>
+        <p>• 1 mark per question<br>• Laip ah tholachitiya da<br>• Dhamma thundu blade mela nee vacha nambikaya un mela vei</p>
       </div>
       <div class="card mini-card">
         <h4>Review Mode</h4>
         <p>• Board ada vandha board mattum adanum<br>• Senthil eh jail kulla vachi podanum na namma aalu oruthan avan block kulla eranganum</p>
       </div>
       <div class="card mini-card">
-        <h4>NPTEL Material's</h4>
+        <h4>Meme</h4>
         <p>
           • Notes, PDFs, and extra study resources for quick revision.<br>
           <a href="https://drive.google.com/drive/folders/13RAQrmSMBmELktdyNsgEBEA6HqR2UR61" target="_blank" style="color: var(--text); font-weight: 600; text-decoration: underline;">
@@ -1073,13 +1073,31 @@ S3: IMAP4 is more secure than POP3`, options: ['a) Only S1','b) Only S2','c) S2 
   function updateWeekSelectSummary() {
     const summary = document.getElementById('weekSelectSummary');
     const btn = document.getElementById('startSelectedBtn');
+
     if (selectedWeeks.length === 0) {
       summary.innerHTML = 'No weeks selected.';
       btn.disabled = true;
     } else {
-      const totalQ = selectedWeeks.reduce((s,w) => s + quizData[w].length, 0);
-      const names = selectedWeeks.map(w => `Week ${w}`).join(', ');
-      summary.innerHTML = `<strong>${selectedWeeks.length} week${selectedWeeks.length > 1 ? 's' : ''} selected</strong> &mdash; ${names} &mdash; ${totalQ} questions total`;
+      const totalQ = selectedWeeks.reduce((s, w) => s + quizData[w].length, 0);
+
+      const weekList = selectedWeeks
+        .map(w => `<div>• Week ${w}</div>`)
+        .join('');
+
+      summary.innerHTML = `
+        <div><strong>${selectedWeeks.length} week${selectedWeeks.length > 1 ? 's' : ''} selected</strong></div>
+        <div style="
+          margin-top: 8px;
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 4px 12px;
+          line-height: 1.6;
+        ">
+          ${weekList}
+        </div>
+        <div style="margin-top: 10px;"><strong>${totalQ} questions total</strong></div>
+      `;
+
       btn.disabled = false;
     }
   }
@@ -1233,10 +1251,10 @@ S3: IMAP4 is more secure than POP3`, options: ['a) Only S1','b) Only S2','c) S2 
   }
 
   function getPerformanceText(percent) {
-    if (percent >= 90) return 'Parati Patam Kudupanga Adha Vittukittayae Veddu Poi Serru.';
-    if (percent >= 75) return 'Super Da Kaiya Kudu.';
-    if (percent >= 60) return 'Idhula Peruma Padraku Onnu illa na.';
-    if (percent >= 40) return 'Dei Parama Padi da.';
+    if (percent >= 90) return 'Parati patam kudupanga adha vittukittayae veddu poi serru.';
+    if (percent >= 75) return 'Idhula peruma padraku onnu illa na.';
+    if (percent >= 60) return 'Super da kaiya kudu.';
+    if (percent >= 40) return 'Dei parama padi da.';
     return 'User death by Gunshot';
   }
 
