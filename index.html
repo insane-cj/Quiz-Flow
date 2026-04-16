@@ -105,6 +105,65 @@
         max-height: 180px;
       }
     }
+        .secret-trigger {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .secret-trigger:active {
+      transform: scale(0.98);
+    }
+
+    /* Hidden Easter Egg Modal */
+    .easter-egg-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+
+    .easter-egg-modal.active {
+      display: flex;
+    }
+
+    .easter-egg-box {
+      background: #fff;
+      border-radius: 16px;
+      padding: 14px;
+      max-width: 360px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      animation: popIn 0.25s ease;
+    }
+
+    .easter-egg-box img {
+      width: 100%;
+      max-height: 420px;
+      object-fit: contain;
+      border-radius: 12px;
+      display: block;
+    }
+
+    .easter-egg-close {
+      margin-top: 12px;
+      width: 100%;
+    }
+
+    @keyframes popIn {
+      from {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
     /* ── Buttons ── */
     .btn {
       display: inline-flex;
@@ -581,6 +640,49 @@
     }
     .week-select-summary strong { color: var(--text); }
 
+    /* ── Shuffle Toggle ── */
+    .shuffle-toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 18px;
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+      user-select: none;
+    }
+    .shuffle-toggle:hover { border-color: var(--border-strong); background: var(--bg); }
+    .shuffle-toggle.active {
+      border-color: var(--accent);
+      background: var(--accent-light);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+    .shuffle-toggle input[type="checkbox"] {
+      accent-color: var(--accent);
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+    }
+    .shuffle-toggle-label {
+      flex: 1;
+    }
+    .shuffle-toggle-label strong {
+      font-size: 13.5px;
+      font-weight: 600;
+      display: block;
+      color: var(--text);
+    }
+    .shuffle-toggle-label span {
+      font-size: 12px;
+      color: var(--text-3);
+    }
+    .shuffle-icon {
+      font-size: 18px;
+    }
+
     /* ── MSQ badge ── */
     .msq-badge {
       display: inline-block;
@@ -620,7 +722,7 @@
   <div class="topbar">
     <div>
       <div class="brand-tag">NPTEL &mdash; Computer Networks &amp; Internet Protocol</div>
-      <div class="brand-title">Quiz Flow</div>
+      <div class="brand-title secret-trigger" onclick="handleSecretTap()">Quiz Flow</div>
     </div>
     <button class="btn btn-ghost" onclick="restartAll()">Restart</button>
   </div>
@@ -638,7 +740,7 @@
           <li>Claude Chithi 😘</li>
         </ul>
         <div 
-          style="display: flex; justify-content: center; margin-top: 8px;"><button class="btn btn-solid" onclick="showWeekSelect()">Attempt Quiz</button>
+          style="display: flex; justify-content: left; margin-top: 8px;"><button class="btn btn-solid" onclick="showWeekSelect()">Attempt Quiz</button>
         </div>
       </div>
 
@@ -652,19 +754,18 @@
       </div>
       <div class="card mini-card">
         <h4>Review Mode</h4>
-        <p>• Board ada vandha board mattum adanum<br>• Senthil eh jail kulla vachi podanum na namma aalu oruthan avan block kulla eranganum</p>
+        <p>• Board ada vandha board mattum adanum<br>• Senthil eh jail kulla vachi podanum na namma aalu oruthan avan block kulla eranganum<br>• Dei anbu nee senjutu irukura velai nala oru use kedaiyathu</p>
       </div>
       <div class="card mini-card">
-        <h4>NPTEL</h4>
-        <p>
-          • Notes, PDFs, and extra study resources for quick revision.<br>
+        <h4>NPTEL Materials</h4>
+        <p>• Notes, PDFs, and extra study resources for quick revision.<br>• En munnadi vanthu ippadi kekurathe Thappu<br>• Naan poren Vathiyare<br>
           <a href="https://drive.google.com/drive/folders/13RAQrmSMBmELktdyNsgEBEA6HqR2UR61" target="_blank" style="color: var(--text); font-weight: 600; text-decoration: underline;">
             Open Drive Folder ↗
           </a>
         </p>
       </div>
       <div class="home-banner">
-        <img src="https://media.tenor.com/MT1WVYwZi0AAAAAe/moraipu-govt-schl-girl.png" alt="Meme">
+        <img src="https://media.tenor.com/MT1WVYwZi0AAAAAe/moraipu-govt-schl-girl.png" alt="Thalapathy">
       </div>
     </div>
   </section>
@@ -679,6 +780,14 @@
       <button class="btn btn-ghost" onclick="selectAllWeeks()">Select All</button>
       <button class="btn btn-ghost" onclick="clearAllWeeks()">Clear All</button>
     </div>
+    <label class="shuffle-toggle" id="shuffleToggle" onclick="toggleShuffle()">
+      <input type="checkbox" id="shuffleCheckbox" onclick="event.stopPropagation();" onchange="toggleShuffle()">
+      <div class="shuffle-toggle-label">
+        <strong>Shuffle Questions</strong>
+        <span>Randomize the order of questions in each week</span>
+      </div>
+      <span class="shuffle-icon"></span>
+    </label>
     <div class="week-grid" id="weekGrid"></div>
     <div class="week-select-summary" id="weekSelectSummary">No weeks selected.</div>
     <div class="nav-row">
@@ -995,6 +1104,7 @@ S3: IMAP4 is more secure than POP3`, options: ['a) Only S1','b) Only S2','c) S2 
   let currentQuestionIndex = 0;
   let answers = {};
   let weekScores = {};
+  let shuffledData = {};
   let lastScreen = 'homeScreen';
   let selectedWeeks = [...weekOrder];
 
@@ -1073,31 +1183,12 @@ S3: IMAP4 is more secure than POP3`, options: ['a) Only S1','b) Only S2','c) S2 
   function updateWeekSelectSummary() {
     const summary = document.getElementById('weekSelectSummary');
     const btn = document.getElementById('startSelectedBtn');
-
     if (selectedWeeks.length === 0) {
       summary.innerHTML = 'No weeks selected.';
       btn.disabled = true;
     } else {
-      const totalQ = selectedWeeks.reduce((s, w) => s + quizData[w].length, 0);
-
-      const weekList = selectedWeeks
-        .map(w => `<div>• Week ${w}</div>`)
-        .join('');
-
-      summary.innerHTML = `
-        <div><strong>${selectedWeeks.length} week${selectedWeeks.length > 1 ? 's' : ''} selected</strong></div>
-        <div style="
-          margin-top: 8px;
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 4px 12px;
-          line-height: 1.6;
-        ">
-          ${weekList}
-        </div>
-        <div style="margin-top: 10px;"><strong>${totalQ} questions total</strong></div>
-      `;
-
+      const totalQ = selectedWeeks.reduce((s,w) => s + quizData[w].length, 0);
+      summary.innerHTML = `<strong>${selectedWeeks.length} week${selectedWeeks.length > 1 ? 's' : ''} selected</strong> &mdash; ${totalQ} questions`;
       btn.disabled = false;
     }
   }
@@ -1123,13 +1214,34 @@ S3: IMAP4 is more secure than POP3`, options: ['a) Only S1','b) Only S2','c) S2 
   function startSelectedWeeks() {
     if (selectedWeeks.length === 0) return;
     selectedWeeks.forEach(week => {
-      answers[week] = quizData[week].map(q => isMSQ(q) ? [] : null);
+      shuffledData[week] = shuffleEnabled ? shuffleArray(quizData[week]) : quizData[week];
+      answers[week] = shuffledData[week].map(q => isMSQ(q) ? [] : null);
       weekScores[week] = null;
     });
     startWeek(selectedWeeks[0]);
   }
 
   function startQuiz() { showWeekSelect(); }
+
+  /* ── Shuffle ── */
+  let shuffleEnabled = false;
+
+  function toggleShuffle() {
+    shuffleEnabled = !shuffleEnabled;
+    const cb = document.getElementById('shuffleCheckbox');
+    const toggle = document.getElementById('shuffleToggle');
+    cb.checked = shuffleEnabled;
+    toggle.classList.toggle('active', shuffleEnabled);
+  }
+
+  function shuffleArray(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
 
   /* ── Quiz ── */
   function startWeek(week) {
@@ -1141,7 +1253,7 @@ S3: IMAP4 is more secure than POP3`, options: ['a) Only S1','b) Only S2','c) S2 
   }
 
   function renderQuestion() {
-    const weekQuestions = quizData[currentWeek];
+    const weekQuestions = shuffledData[currentWeek] || quizData[currentWeek];
     const q = weekQuestions[currentQuestionIndex];
     const msq = isMSQ(q);
     const answeredCount = answers[currentWeek].filter(v => isAnswered(v)).length;
@@ -1160,7 +1272,8 @@ S3: IMAP4 is more secure than POP3`, options: ['a) Only S1','b) Only S2','c) S2 
       document.getElementById('selectedMeta').innerText = selected !== null ? q.options[selected] : 'None';
     }
 
-    document.getElementById('questionText').innerText = q.question;
+    const cleanQuestion = q.question.replace(/^Q\d+\.\s*/i, `Q${currentQuestionIndex + 1}. `);
+    document.getElementById('questionText').innerText = cleanQuestion;
 
     const progressPercent = ((currentQuestionIndex + 1) / weekQuestions.length) * 100;
     document.getElementById('progressFill').style.width = `${progressPercent}%`;
@@ -1233,7 +1346,7 @@ S3: IMAP4 is more secure than POP3`, options: ['a) Only S1','b) Only S2','c) S2 
       alert('Please select an answer before submitting.');
       return;
     }
-    const questions = quizData[currentWeek];
+    const questions = shuffledData[currentWeek] || quizData[currentWeek];
     let score = 0;
     questions.forEach((q, i) => {
       if (answersEqual(answers[currentWeek][i], q.answer)) score++;
@@ -1263,7 +1376,7 @@ S3: IMAP4 is more secure than POP3`, options: ['a) Only S1','b) Only S2','c) S2 
     lastScreen = 'resultScreen';
     showScreen('resultScreen');
 
-    const total = quizData[week].length;
+    const total = (shuffledData[week] || quizData[week]).length;
     const score = weekScores[week] || 0;
     const percent = Math.round((score / total) * 100);
 
@@ -1333,14 +1446,15 @@ S3: IMAP4 is more secure than POP3`, options: ['a) Only S1','b) Only S2','c) S2 
 
     weeksToShow.forEach(week => {
       const weekScore = weekScores[week];
-      const total = quizData[week].length;
+      const weekQs = shuffledData[week] || quizData[week];
+      const total = weekQs.length;
 
       const header = document.createElement('div');
       header.className = 'review-header';
       header.innerHTML = `<span>Week ${week}</span><span class="score-chip">${weekScore !== null ? weekScore : 0} / ${total}</span>`;
       reviewList.appendChild(header);
 
-      quizData[week].forEach((q, i) => {
+      weekQs.forEach((q, i) => {
         const msq = isMSQ(q);
         const userAns = answers[week][i];
         const correctAns = q.answer;
@@ -1360,10 +1474,11 @@ S3: IMAP4 is more secure than POP3`, options: ['a) Only S1','b) Only S2','c) S2 
           correctText = escapeHtml(q.options[correctAns]);
         }
 
+        const cleanQuestion = q.question.replace(/^Q\d+\.\s*/i, `Q${i + 1}. `);
         card.innerHTML = `
           ${msq ? '<span class="msq-badge">Multiple Select</span> ' : ''}
           <span class="badge ${isCorrect ? 'correct' : 'wrong'}">${isCorrect ? 'Correct' : 'Wrong'}</span>
-          <div class="review-question">${q.question.replace(/\n/g, '<br>')}</div>
+          <div class="review-question">${cleanQuestion.replace(/\n/g, '<br>')}</div>
           <div class="answer-row ${isCorrect ? 'user-correct' : 'user-wrong'}">
             <strong>Your answer:</strong><br>${userText}
           </div>
@@ -1395,14 +1510,14 @@ S3: IMAP4 is more secure than POP3`, options: ['a) Only S1','b) Only S2','c) S2 
     const first = selectedWeeks[0];
     const second = selectedWeeks[1] ?? null;
     document.getElementById('finalWeek1Label').innerText = `Week ${first}`;
-    document.getElementById('finalWeek1Score').innerText = `${weekScores[first] || 0} / ${quizData[first].length}`;
+    document.getElementById('finalWeek1Score').innerText = `${weekScores[first] || 0} / ${(shuffledData[first] || quizData[first]).length}`;
     document.getElementById('finalWeek2Label').innerText = second !== null ? `Week ${second}` : '—';
-    document.getElementById('finalWeek2Score').innerText = second !== null ? `${weekScores[second] || 0} / ${quizData[second].length}` : '—';
+    document.getElementById('finalWeek2Score').innerText = second !== null ? `${weekScores[second] || 0} / ${(shuffledData[second] || quizData[second]).length}` : '—';
 
     let total = 0, totalQ = 0;
     selectedWeeks.forEach(week => {
       total += (weekScores[week] || 0);
-      totalQ += quizData[week].length;
+      totalQ += (shuffledData[week] || quizData[week]).length;
     });
 
     const percent = Math.round((total / totalQ) * 100);
@@ -1420,13 +1535,48 @@ S3: IMAP4 is more secure than POP3`, options: ['a) Only S1','b) Only S2','c) S2 
 
   function restartAll() {
     initState();
+    shuffledData = {};
+    shuffleEnabled = false;
+    const cb = document.getElementById('shuffleCheckbox');
+    const toggle = document.getElementById('shuffleToggle');
+    if (cb) cb.checked = false;
+    if (toggle) toggle.classList.remove('active');
     selectedWeeks = [...weekOrder];
     currentWeek = weekOrder[0];
     currentQuestionIndex = 0;
     lastScreen = 'homeScreen';
     showScreen('homeScreen');
   }
-</script>
+  let lastSecretTap = 0;
 
+  function handleSecretTap() {
+    const now = Date.now();
+    const doubleTapDelay = 350; // milliseconds
+
+    if (now - lastSecretTap < doubleTapDelay) {
+      openEasterEgg();
+      lastSecretTap = 0;
+    } else {
+      lastSecretTap = now;
+    }
+  }
+
+  function openEasterEgg() {
+    document.getElementById('easterEggModal').classList.add('active');
+  }
+
+  function closeEasterEgg(event) {
+    if (!event || event.target.id === 'easterEggModal') {
+      document.getElementById('easterEggModal').classList.remove('active');
+    }
+  }
+</script>
+    <!-- Hidden Easter Egg Modal -->
+  <div id="easterEggModal" class="easter-egg-modal" onclick="closeEasterEgg(event)">
+    <div class="easter-egg-box" onclick="event.stopPropagation()">
+      <img src="https://media.tenor.com/MT1WVYwZi0AAAAAe/moraipu-govt-schl-girl.png" alt="Secret Easter Egg GIF">
+      <button class="btn btn-solid easter-egg-close" onclick="closeEasterEgg()">Close</button>
+    </div>
+  </div>
 </body>
 </html>
