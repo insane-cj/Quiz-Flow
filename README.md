@@ -1,168 +1,83 @@
-# 🚀 NPTEL Quiz Flow
+# NPTEL Quiz Flow
 
-A smooth and simple **week-wise practice quiz web app** built for **NPTEL assignment preparation**.
+So I made this thing because practicing NPTEL assignments was becoming a headache. You know how it is — scrolling through PDFs, losing track of which week you're on, forgetting what you got wrong. This fixes that.
 
-Made for students who want to practice **one question at a time**, check **week-wise scores**, and review **correct + wrong answers** easily.
-
----
-
-## ✨ Features
-
-* 📚 **Week-wise quiz flow**
-* ✅ **One question per page**
-* 🎯 **Submit each week separately**
-* 📊 **Week-wise score display**
-* 🧾 **Final summary with total score**
-* 🔍 **Review correct and wrong answers anytime**
-* ♻️ **Restart quiz anytime**
-* 📱 **Clean responsive UI (mobile friendly)**
+It's a simple week-wise quiz app. One question at a time. That's it.
 
 ---
 
-## 🛠️ Built With
+## What it does
 
-* **HTML**
-
-No frameworks.
-No extra setup drama.
-Just open and run 🔥
+- Lets you go through questions week by week
+- Shows one question per page so you actually focus
+- You submit each week separately and see your score right away
+- At the end you get a total score across all weeks
+- There's a review mode where you can see what you got right and wrong
+- You can restart whenever you want
+- Works fine on your phone too
 
 ---
 
-## 🎮 How It Works
+## How it's built
 
-1. Open the app in your browser
+Just HTML. One file. No frameworks, no install steps, no nonsense. Open it and it works.
+
+---
+
+## How to use it
+
+1. Open the link in your browser
 2. Start the quiz
-3. Attempt questions **week by week**
-4. Submit each week to see your score
-5. Continue to next week
-6. View final total score
-7. Review all your answers anytime
+3. Go through each week, one question at a time
+4. Submit a week, see your score, move to the next one
+5. After all weeks, check your total
+6. Use review mode to go through mistakes
+7. Restart if you want to try again
+
+That's the whole flow. Nothing hidden.
 
 ---
 
-## 📂 Project Structure
+## Project structure
 
-```bash
-NPTEL-Quiz-Flow/
+```text
+Quiz-Flow/
 │── index.html
 │── README.md
 ```
 
-> If your file name is different, just replace `index.html` with your actual file name.
+Yeah it's really just one file.
+
+## Why I built this
+
+I was tired of messy assignment prep. PDFs everywhere, no clear structure, couldn't tell what I messed up on without going back and checking everything manually. So I put this together to keep things clean and organized. Less stress before deadlines, basically.
 
 ---
 
-## 🚀 How to Run
+## Who it's for
 
-Super easy 👇
-
-* Download or clone the project
-* Open the HTML file in any browser
-
-```bash
-Just double click the HTML file 😌
-```
-
-Or if you want to use Live Server in VS Code:
-
-```bash
-Right click → Open with Live Server
-```
+- Anyone doing NPTEL courses who wants to practice before submitting
+- People who want to quickly revise before the deadline hits
+- Anyone who likes seeing their wrong answers in one place instead of hunting for them
 
 ---
 
-## 💡 Why I Made This
+## Hosting
 
-Normal assignment practice can be messy af 💀
+I choose to vercel host my project
 
-So this project was made to keep things:
-
-* simple
-* organized
-* easy to attempt
-* easy to review
-* less stressful before submission 😭
-
-Basically… **student survival tool** 📚⚡
+That's it. It'll be live.
 
 ---
 
-## 🎯 Use Case
+## Credits
 
-Perfect for:
+Made by சிஜே.
 
-* NPTEL weekly assignment practice
-* Self testing before submission
-* Quick revision before deadlines
-* Reviewing wrong answers without confusion
+Shoutout to ChatGPT mama and Claude chithi for helping me figure things out along the way.
 
 ---
 
-## 📸 Preview
+## Note
 
-> Clean minimal quiz UI with:
-
-* Week selection / week flow
-* One question at a time
-* Score summary
-* Answer review mode
-
-*(You can add screenshots here later if you want 👀)*
-
----
-
-## 🌐 GitHub Pages (Optional)
-
-If you want to host it online:
-
-1. Push project to GitHub
-2. Go to **Settings**
-3. Open **Pages**
-4. Select branch: `main`
-5. Save
-
-Boom 💥
-Your quiz app is live.
-
----
-
-## 👨‍💻 Author
-
-**Made by சிஜே.**
-
----
-
-## 💖 Special Thanks
-
-* **Chatgpt mama**
-* **Claude chithi**
-
----
-
-## 📌 Note
-
-This project is made for **practice and learning purposes**.
-
-If you use it for your own NPTEL prep, W move 🫡
-
----
-
-## ⭐ Support
-
-If you like this project:
-
-* Give it a ⭐ on GitHub
-* Share it with your classmates
-* Use it to survive assignments together 😭🤝
-
----
-
-# 🔥 Final Vibe
-
-**Study smart.
-Practice fast.
-Score better.
-No panic.**
-
----
+This is for practice. Use it however helps you. If it makes your NPTEL prep even slightly less painful, that's a win.
